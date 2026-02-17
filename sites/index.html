@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="hi" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAMA Quest | Daily</title>
+    <style>
+        /* --- PROFESSIONAL THEME --- */
+        :root {
+            --primary: #00ff41; /* Hacker Green */
+            --danger: #ff3333;  /* Alert Red */
+            --dark: #050505;
+            --glass: rgba(18, 18, 18, 0.85);
+            --text: #ffffff;
+            --font: 'Segoe UI', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            color: var(--text);
+            background-color: var(--dark);
+            /* Peaceful Background Image */
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1600618528240-fb9fc964b853?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 5%; background: rgba(0,0,0,0.95); position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid #333;
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links a { color: #ccc; text-decoration: none; margin-left: 20px; font-size: 0.9rem; text-transform: uppercase; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* --- LAYOUT --- */
+        section { padding: 80px 20px; min-height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .container { max-width: 800px; width: 100%; }
+
+        h1 { font-size: 3.5rem; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,255,65,0.3); }
+        h2 { font-size: 2.5rem; color: var(--primary); margin-bottom: 30px; border-bottom: 2px solid #333; display: inline-block; padding-bottom: 10px; }
+        p { font-size: 1.2rem; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+
+        /* --- CARDS & BOXES --- */
+        .glass-card {
+            background: var(--glass); padding: 40px; border-radius: 15px;
+            border: 1px solid #333; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* STREAK COUNTER */
+        .streak-box {
+            border: 2px solid var(--primary); padding: 20px; border-radius: 10px; display: inline-block; margin-top: 20px;
+        }
+        .streak-count { font-size: 3rem; font-weight: bold; color: var(--primary); display: block; }
+
+        /* GAME UI */
+        .quiz-box { border: 2px dashed var(--primary); position: relative; }
+        .stats-bar { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1rem; color: #aaa; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .rank-badge { color: var(--primary); font-weight: bold; text-transform: uppercase; }
+        
+        input[type="text"] {
+            width: 100%; padding: 15px; background: #222; border: 1px solid #555;
+            color: white; font-size: 1.2rem; text-align: center; border-radius: 8px; margin: 20px 0; outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+
+        /* BUTTONS */
+        .btn { padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1rem; margin: 5px; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: black; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-danger { background: var(--danger); color: white; }
+        
+        /* FLOATING PANIC BUTTON */
+        .fab-panic {
+            position: fixed; bottom: 30px; right: 30px;
+            background: var(--danger); color: white; width: 70px; height: 70px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 30px; box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+            cursor: pointer; z-index: 2000; animation: pulse 2s infinite; border: 2px solid white;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* EXPLANATION & STORIES */
+        .explain-box { text-align: left; background: #222; padding: 15px; border-left: 4px solid var(--primary); display: none; margin-top: 20px; color: #ddd; }
+        .story-card { text-align: left; border-left: 4px solid var(--danger); }
+
+        /* CONTACT */
+        .contact-icons a { font-size: 1.5rem; margin: 0 15px; text-decoration: none; }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } 
+        }
+        /* --- YAMA AI CHAT WIDGET --- */
+        .fab-yama {
+            position: fixed; bottom: 30px; right: 30px;
+            background: linear-gradient(135deg, #000, #222);
+            color: var(--primary); width: 70px; height: 70px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 30px; border: 2px solid var(--primary);
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+            cursor: pointer; z-index: 2000; transition: 0.3s;
+        }
+        .fab-yama:hover { transform: scale(1.1) rotate(-10deg); }
+
+        .chat-container {
+            display: none; position: fixed; bottom: 110px; right: 30px;
+            width: 350px; height: 500px; background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--primary); border-radius: 15px;
+            z-index: 2000; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            background: var(--primary); color: black; padding: 15px;
+            font-weight: bold; display: flex; justify-content: space-between;
+            border-radius: 14px 14px 0 0; align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 0.9rem; line-height: 1.4; }
+        .msg-yama { align-self: flex-start; background: #222; border-left: 3px solid var(--primary); color: #ddd; }
+        .msg-user { align-self: flex-end; background: var(--primary); color: black; font-weight: 500; }
+
+        .chat-input-area {
+            padding: 10px; border-top: 1px solid #333; display: flex; gap: 5px;
+        }
+        .chat-input-area input {
+            width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #444;
+            background: #000; color: white; margin: 0; text-align: left;
+        }
+        .chat-input-area button {
+            background: var(--primary); border: none; padding: 0 15px;
+            border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">REBOOT 🧠</div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#braingym">Brain Gym</a>
+            <a href="#stories">Reality</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <section id="home">
+        <div class="container">
+            <h1>RECLAIM YOUR MIND</h1>
+            <p>आपकी आदतें आपको नहीं, आप आदतों को कंट्रोल करेंगे। <br> डोपामाइन डिटॉक्स शुरू करें।</p>
+            
+            <div class="glass-card streak-box">
+                <span>DAYS CLEAN</span>
+                <span id="daysCount" class="streak-count">0</span>
+                <button class="btn btn-outline" style="font-size: 0.8rem; margin-top: 10px;" onclick="resetStreak()">Reset Counter (I Relapsed)</button>
+            </div>
+            <br>
+            <a href="#braingym" class="btn btn-primary">Start Challenge 🚀</a>
+        </div>
+    </section>
+
+    <section id="braingym">
+        <div class="container">
+            <h2>BRAIN GYM 🧠</h2>
+            <div class="glass-card quiz-box" id="quizContainer">
+                <div class="stats-bar">
+                    <span>Level: <span id="levelCounter">1</span>/100</span>
+                    <span>Score: <span id="scoreCounter">0</span></span>
+                    <span class="rank-badge" id="rankDisplay">Beginner 🟢</span>
+                </div>
+                
+                <h3 id="questionText" style="min-height: 60px; font-size: 1.4rem;">Loading...</h3>
+                
+                <input type="text" id="userAnswer" placeholder="अपना उत्तर यहाँ लिखें..." autocomplete="off">
+                
+                <div id="actionButtons">
+                    <button class="btn btn-primary" onclick="checkAnswer()" id="lockBtn">LOCK ANSWER 🔒</button>
+                    <button class="btn btn-primary" onclick="nextQuestion()" id="nextBtn" style="display:none;">Next ➡️</button>
+                    <button class="btn btn-outline" onclick="restartQuiz()" id="restartBtn" style="display:none;">Restart Challenge 🔄</button>
+                </div>
+
+                <div id="resultArea" style="margin-top: 20px; font-weight: bold; font-size: 1.2rem;"></div>
+                <div id="explanation" class="explain-box"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai-professor">
+        <div class="container">
+            <h2>ASK PROFESSOR AI 👨‍🏫</h2>
+            <div class="glass-card professor-box">
+                <p>कोई सवाल? सिलेबस, लाइफ या मोटिवेशन—प्रोफेसर से पूछें।</p>
+                <input type="text" id="user-ques" class="prof-input" placeholder="अपना सवाल यहाँ लिखें (UPSC, Maths, Life...)" autocomplete="off" style="width: 100%; padding: 15px; background: #222; border: 1px solid #555; color: white; border-radius: 8px; margin: 20px 0; outline: none;">
+                <button class="btn btn-primary" onclick="askProf()">सवाल पूछें 🚀</button>
+                <div id="prof-reply" class="explain-box" style="margin-top: 20px; text-align: left;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stories">
+        <div class="container">
+            <h2>REALITY CHECK 📖</h2>
+            
+            <div class="glass-card story-card">
+                <h3 style="color: var(--danger);">🚫 5 साल बाद का सच</h3>
+                <p>
+                    "राहुल को लगता था कि एक रील और देख लूं, क्या फर्क पड़ता है? आज वो 26 साल का है। उसके दोस्त बिजनेस कर रहे हैं, और राहुल घर पर बैठकर सरकारी नौकरी के फॉर्म भर रहा है। <br><br>
+                    <strong>सीख:</strong> समय फ्री है, लेकिन बेशकीमती है। इसे वापस नहीं लाया जा सकता।"
+                </p>
+            </div>
+
+            <div class="glass-card story-card" style="border-left-color: var(--primary);">
+                <h3 style="color: var(--primary);">💡 The 10-Minute Rule</h3>
+                <p>
+                    "जब भी तलब (Urge) लगे, तो खुद से बोलो - 'मैं करूँगा, लेकिन 10 मिनट बाद।' <br>
+                    साइकोलॉजी कहती है कि कोई भी तलब सिर्फ 15 मिनट तक पीक पर रहती है। अगर आपने वो 10 मिनट निकाल दिए, तो आप जीत गए।"
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>CONNECT WITH US</h2>
+            <div class="glass-card">
+                <p>अकेले नहीं हो। हम साथ हैं। कोई भी दिक्कत हो, बात करो।</p>
+                <div class="contact-icons">
+                    <a href="mailto:raaryan252@gmail.com" class="btn btn-primary">📧 Email Us</a>
+                    <a href="https://wa.me/" class="btn btn-primary" style="background: #25D366; color: white;">💬 WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Project REBOOT © 2024 | Built for Warriors</p>
+    </footer>
+
+    <div class="fab-yama" onclick="toggleChat()" title="Talk to YAMA">🧙‍♂️</div>
+
+    <div class="chat-container" id="yamaChatBox">
+        <div class="chat-header">
+            <span>YAMA: The Mentor 🧠</span>
+            <span onclick="toggleChat()" style="cursor:pointer; font-size:1.2rem;">✖</span>
+        </div>
+        <div class="chat-messages" id="chatHistory">
+            <div class="msg msg-yama">
+                नमस्ते। मैं यम (Yama) हूँ।<br>UPSC, NEET या जिंदगी... कहाँ फंसे हो? पूछो।
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="aiInput" placeholder="Ask your doubt..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. STREAK COUNTER LOGIC (LocalStorage) ---
+        function loadStreak() {
+            let startDate = localStorage.getItem('rebootStartDate');
+            if (!startDate) {
+                startDate = new Date().getTime();
+                localStorage.setItem('rebootStartDate', startDate);
+            }
+            let now = new Date().getTime();
+            let diff = now - startDate;
+            let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('daysCount').innerText = days;
+        }
+
+        function resetStreak() {
+            if(confirm("क्या आप सच में रिसेट करना चाहते हैं? (Relapse is part of recovery, don't give up!)")) {
+                localStorage.setItem('rebootStartDate', new Date().getTime());
+                document.getElementById('daysCount').innerText = "0";
+            }
+        }
+        
+        loadStreak(); // Run on load
+
+        // --- 2. GAME LOGIC (100 UNIQUE QUESTIONS) ---
+        
+        // Full Database of 100 Questions
+        const fullQuestionBank = [
+            // --- 50 RIDDLES ---
+            { q: "एक कमरे में 2 बाप और 2 बेटे हैं, लेकिन कुल सिर सिर्फ 3 हैं। कैसे?", a: ["grandfather", "दादा", "3", "teen"], e: "दादा, पिता और बेटा = 3 लोग।" },
+            { q: "वो क्या है जो आपके पास है, लेकिन इस्तेमाल दूसरे लोग ज्यादा करते हैं?", a: ["name", "naam", "naam"], e: "आपका नाम।" },
+            { q: "वो क्या है जो ऊपर तो जाती है, पर कभी नीचे नहीं आती?", a: ["age", "umra", "umr"], e: "आपकी उम्र (Age)।" },
+            { q: "वो क्या है जिसे आप नाश्ते (Breakfast) में कभी नहीं खा सकते?", a: ["dinner", "lunch", "raat ka khana"], e: "लंच या डिनर।" },
+            { q: "ऐसी कौन सी चीज है जो फटने पर आवाज नहीं करती?", a: ["doodh", "milk", "kismat"], e: "दूध (Milk)।" },
+            { q: "वो कौन सी चीज है जो धूप में नहीं सूख सकती?", a: ["pasina", "sweat", "paseena"], e: "पसीना (Sweat)।" },
+            { q: "किस महीने में लोग सबसे कम सोते हैं?", a: ["february", "feb"], e: "फरवरी, क्योंकि इसमें दिन कम होते हैं।" },
+            { q: "वो क्या है जो साल में एक बार, और हफ्ते में दो बार आता है?", a: ["e", "ee"], e: "अक्षर 'E' (Week में दो बार, Year में एक बार)।" },
+            { q: "वो कौन है जिसका सिर नहीं है फिर भी टोपी पहनता है?", a: ["bottle", "botal"], e: "बोतल (Bottle)।" },
+            { q: "काली है पर कौवा नहीं, लंबी है पर सांप नहीं। बताओ क्या?", a: ["choti", "braid", "baal"], e: "चोटी (Braid)।" },
+            { q: "ऐसी कौन सी चीज है जो पानी पीते ही मर जाती है?", a: ["pyas", "thirst", "aag", "fire"], e: "प्यास या आग।" },
+            { q: "वो क्या है जिसे काटने पर लोग गाना गाते हैं?", a: ["cake", "birthday cake"], e: "केक (Birthday Cake)।" },
+            { q: "हरा आटा, लाल पराठा, मिल-जुलकर सब सखियों ने बांटा।", a: ["mehendi", "mehndi", "henna"], e: "मेहंदी।" },
+            { q: "ऐसी कौन सी जगह है जहाँ अमीर और गरीब दोनों कटोरा लेकर खड़े होते हैं?", a: ["pani puri", "golgappa", "chaat"], e: "पानी पुरी की दुकान।" },
+            { q: "वो कौन है जो बिना पैरों के भागता है और कभी लौट कर नहीं आता?", a: ["time", "samay", "waqt"], e: "समय (Time)।" },
+            { q: "किस चीज को हम कैद नहीं कर सकते?", a: ["parchai", "shadow"], e: "परछाई (Shadow)।" },
+            { q: "वो क्या है जो आपके सोते ही नीचे गिर जाती है और उठते ही ऊपर उठ जाती है?", a: ["palke", "eyelids", "aankh"], e: "पलकें (Eyelids)।" },
+            { q: "ऐसी कौन सी चीज है जो ठंड में भी पिघलती है?", a: ["candle", "mombatti", "mombati"], e: "मोमबत्ती (Candle)।" },
+            { q: "वो कौन सी चीज है जो जितनी ज्यादा बढ़ती है, उतनी ही कम होती है?", a: ["life", "zindagi", "saans"], e: "उम्र या जिंदगी।" },
+            { q: "ऐसा कौन सा फल है जो मीठा होने के बाद भी बाजार में नहीं बिकता?", a: ["sabar", "mehandi", "mehnat"], e: "सब्र का फल या मेहनत का फल।" },
+            { q: "वो क्या है जो दूसरों को भरपेट खाना खिलाता है मगर खुद नहीं खाता?", a: ["chammach", "spoon", "karchhi"], e: "चम्मच (Spoon)।" },
+            { q: "ऐसी कौन सी चीज है जिसके पंख नहीं हैं, फिर भी हवा में उड़ती है?", a: ["kite", "patang"], e: "पतंग (Kite)।" },
+            { q: "वो कौन है जो बिना बुलाए आता है और बिना चुराए सब कुछ ले जाता है?", a: ["maut", "death", "mrityu"], e: "मृत्यु (Death)।" },
+            { q: "एक आदमी ने अपने हाथ पानी से धोए, फिर भी हाथ गीले नहीं हुए। कैसे?", a: ["gloves", "dastane"], e: "उसने दस्ताने (Gloves) पहने थे।" },
+            { q: "वो क्या है जो आपके सामने होती है लेकिन आप उसे देख नहीं सकते?", a: ["future", "bhavishya"], e: "भविष्य (Future)।" },
+            { q: "ऐसी कौन सी चीज है जो पैदा होते ही उड़ने लगती है?", a: ["dhua", "smoke"], e: "धुआँ (Smoke)।" },
+            { q: "वो क्या है जो बाहर फ्री में और अस्पताल में पैसों से मिलती है?", a: ["oxygen", "hawa"], e: "ऑक्सीजन (Oxygen)।" },
+            { q: "ऐसा कौन सा कोट है जिसे हम पहन नहीं सकते?", a: ["pathankot", "rajkot", "sialkot"], e: "पठानकोट (या कोई भी शहर जिसके नाम में कोट हो)।" },
+            { q: "तीन अक्षर का मेरा नाम, उल्टा सीधा एक समान।", a: ["jahaj", "dalda", "malayalam", "nayan"], e: "जहाज / नयन।" },
+            { q: "वो कौन सी चीज है जो बच्चे को बूढ़ा बना देती है?", a: ["age", "time", "umra"], e: "उम्र (Age)।" },
+            { q: "वो क्या है जो पूरा कमरा भर देता है मगर जगह बिल्कुल नहीं घेरता?", a: ["light", "roshni", "prakash"], e: "प्रकाश (Light)।" },
+            { q: "वो क्या है जो एक जगह से दूसरी जगह जाती है, पर अपनी जगह से नहीं हिलती?", a: ["sadak", "road", "rasta"], e: "सड़क (Road)।" },
+            { q: "ऐसी कौन सी चीज है जिसे हम देख सकते हैं लेकिन छू नहीं सकते?", a: ["dream", "sapna"], e: "सपना (Dream)।" },
+            { q: "वो क्या है जो मई में है पर दिसंबर में नहीं, आग में है पर पानी में नहीं?", a: ["garmi", "heat"], e: "गर्मी।" },
+            { q: "वो कौन सा ड्राइवर है जिसे लाइसेंस की जरूरत नहीं होती?", a: ["screwdriver", "screw driver"], e: "स्क्रूड्राइवर (Screwdriver)।" },
+            { q: "वो क्या है जो टूटने के लिए ही बनता है?", a: ["record"], e: "रिकॉर्ड (Record)।" },
+            { q: "वो क्या है जिसके पास गर्दन है पर सिर नहीं?", a: ["shirt", "kameez", "bottle"], e: "शर्ट (Shirt) या बोतल।" },
+            { q: "ऐसी कौन सी चीज है जो सोने की है, पर सुनार की दुकान पर नहीं मिलती?", a: ["charpai", "takhat", "pillow", "neend"], e: "चारपाई या नींद।" },
+            { q: "मैं हरी हूँ, पर पत्ता नहीं। नकलची हूँ, पर बंदर नहीं।", a: ["tota", "parrot"], e: "तोता (Parrot)।" },
+            { q: "वो क्या है जो लड़कियां साल में सिर्फ एक बार पहनती हैं?", a: ["rakhi"], e: "राखी (कलाई पर)।" },
+            { q: "ऐसी कौन सी चीज है जिसे जितना साफ करो, वो उतनी ही काली होती है?", a: ["blackboard"], e: "ब्लैकबोर्ड (Blackboard)।" },
+            { q: "वो क्या है जो हमेशा आता है, लेकिन कभी पहुँचता नहीं?", a: ["tomorrow", "kal"], e: "कल (Tomorrow)।" },
+            { q: "बिन पैरों के चलती जाती, सबको समय बताती।", a: ["ghadi", "clock", "watch"], e: "घड़ी (Clock)।" },
+            { q: "कटोरे पे कटोरा, बेटा बाप से भी गोरा।", a: ["nariyal", "coconut"], e: "नारियल (Coconut)।" },
+            { q: "प्रथम कटे तो दर हो जाऊं, अंत कटे तो बंद हो जाऊं।", a: ["bandar", "monkey"], e: "बंदर (Bandar)।" },
+            { q: "काला घोड़ा, सफेद सवारी। एक उतरा तो दूसरे की बारी।", a: ["tawa roti", "tawa"], e: "तवा और रोटी।" },
+            { q: "लाल घोड़ा रुका रहे, काला घोड़ा भागता जाए।", a: ["aag dhua", "fire smoke"], e: "आग और धुआँ।" },
+            { q: "वो कौन सा फूल है जिसके पास कोई रंग और महक नहीं है?", a: ["april fool"], e: "अप्रैल फूल (April Fool)।" },
+            { q: "ऐसी कौन सी सिटी है जहां कोई नहीं रहता?", a: ["electricity", "simplicity", "scarcity"], e: "इलेक्ट्रिसिटी (Electricity)।" },
+            { q: "वो क्या है जो नीम और करेले से भी कड़वा होता है?", a: ["sach", "truth"], e: "सच (Truth)।" },
+
+            // --- 30 REASONING QUESTIONS ---
+            { q: "अगर A=1, B=2, तो BAT कितना होगा?", a: ["23"], e: "B(2) + A(1) + T(20) = 23" },
+            { q: "श्रृंखला पूरी करें: 2, 4, 8, 16, ...", a: ["32"], e: "हर संख्या पिछली संख्या की दोगुनी है।" },
+            { q: "कौन सा अलग है? (Car, Bike, Bus, Apple)", a: ["apple", "seb"], e: "Apple एक फल है, बाकी वाहन हैं।" },
+            { q: "Doctor : Hospital :: Teacher : ?", a: ["school", "college"], e: "डॉक्टर अस्पताल में काम करता है, टीचर स्कूल में।" },
+            { q: "अगर आज सोमवार है, तो 3 दिन बाद क्या होगा?", a: ["thursday", "guruvar"], e: "सोमवार + 3 = गुरुवार।" },
+            { q: "श्रृंखला पूरी करें: 10, 20, 30, ...", a: ["40"], e: "10 का अंतर है।" },
+            { q: "Pen : Write :: Knife : ?", a: ["cut", "katna"], e: "पेन लिखने के काम आता है, चाकू काटने के।" },
+            { q: "अगर CAT = 3120, तो DOG = ?", a: ["4157"], e: "D=4, O=15, G=7 (Alphabet position)।" },
+            { q: "श्रृंखला पूरी करें: 1, 4, 9, 16, ...", a: ["25"], e: "ये वर्गों की श्रृंखला है (Squares: 1², 2², 3²...)।" },
+            { q: "Eye : See :: Ear : ?", a: ["hear", "listen", "sunna"], e: "कान सुनने के लिए होते हैं।" },
+            { q: "कौन सा अलग है? (Red, Blue, Green, Chair)", a: ["chair", "kursi"], e: "Chair एक वस्तु है, बाकी रंग हैं।" },
+            { q: "अगर 1=3, 2=3, 3=5, 4=4, 5=4, तो 6=?", a: ["3"], e: "SIX में 3 अक्षर हैं।" },
+            { q: "Z, Y, X, W, ... अगला क्या?", a: ["v"], e: "उल्टी वर्णमाला चल रही है।" },
+            { q: "Book : Page :: House : ?", a: ["room", "kamra", "brick", "wall"], e: "किताब पन्नों से बनती है, घर कमरों/ईंटों से।" },
+            { q: "Calendar : Date :: Clock : ?", a: ["time", "samay"], e: "कैलेंडर तारीख बताता है, घड़ी समय।" },
+            { q: "श्रृंखला: 5, 10, 15, 20, ...", a: ["25"], e: "5 का पहाड़ा।" },
+            { q: "VIRUS का उल्टा क्या होगा? (SURIV)", a: ["suriv"], e: "शब्द को उल्टा लिखा गया है।" },
+            { q: "अगर 'HELLO' को 'IFMMP' लिखा जाए, तो 'CAT' को क्या लिखेंगे?", a: ["dbu"], e: "हर अक्षर में +1 किया गया है (C->D, A->B, T->U)।" },
+            { q: "Bird : Fly :: Fish : ?", a: ["swim", "tairna"], e: "पक्षी उड़ते हैं, मछली तैरती है।" },
+            { q: "Odd one out: (January, May, Sunday, July)", a: ["sunday", "ravivar"], e: "Sunday एक दिन है, बाकी महीने हैं।" },
+            { q: "Moon : Satellite :: Earth : ?", a: ["planet", "grah"], e: "चांद उपग्रह है, पृथ्वी ग्रह है।" },
+            { q: "1, 1, 2, 3, 5, 8, ... अगला अंक?", a: ["13"], e: "Fibonacci Series (5+8=13)।" },
+            { q: "A का पिता B है, पर B का बेटा A नहीं है। A कौन है?", a: ["beti", "daughter"], e: "A बेटी है।" },
+            { q: "Lion : Roar :: Dog : ?", a: ["bark", "bhaukna"], e: "शेर दहाड़ता है, कुत्ता भौंकता है।" },
+            { q: "श्रृंखला: 100, 90, 80, 70, ...", a: ["60"], e: "-10 का अंतर।" },
+            { q: "Cold : Winter :: Hot : ?", a: ["summer", "garmi"], e: "सर्दी में ठंड, गर्मी में ताप।" },
+            { q: "Shoes : Feet :: Gloves : ?", a: ["hand", "hath"], e: "जूते पैरों में, दस्ताने हाथों में।" },
+            { q: "Odd one out: (Square, Triangle, Circle, Water)", a: ["water", "pani"], e: "बाकी सब आकृतियां (Shapes) हैं।" },
+            { q: "अगर 2+2=8, 3+3=18, तो 4+4=?", a: ["32"], e: "Logic: (N + N) * N => (2+2)*2=8, (4+4)*4=32" },
+            { q: "Day : Night :: Light : ?", a: ["dark", "andhera"], e: "दिन का उल्टा रात, प्रकाश का अंधेरा।" },
+
+            // --- 20 MATH QUESTIONS ---
+            { q: "10 + 10 x 0 = ?", a: ["10"], e: "BODMAS: पहले गुणा (10x0=0), फिर जोड़ (10+0=10)।" },
+            { q: "100 का 20% कितना होता है?", a: ["20"], e: "100 x 20/100 = 20" },
+            { q: "एक त्रिभुज (Triangle) में कितने कोने होते हैं?", a: ["3"], e: "Triangle has 3 corners." },
+            { q: "50 में क्या जोड़ने पर 20 आएगा?", a: ["-30"], e: "50 + (-30) = 20" },
+            { q: "1 किलो रुई और 1 किलो लोहे में कौन भारी है?", a: ["equal", "barabar", "same", "donon"], e: "दोनों 1 किलो हैं, वजन बराबर है।" },
+            { q: "आधा सेब कैसा दिखता है?", a: ["aadha", "half", "same"], e: "दूसरे आधे सेब जैसा।" },
+            { q: "7 + 7 ÷ 7 + 7 x 7 - 7 = ?", a: ["50"], e: "BODMAS: 7 + 1 + 49 - 7 = 50" },
+            { q: "100 - 100 / 2 = ?", a: ["50"], e: "BODMAS: 100 - 50 = 50" },
+            { q: "5 का वर्ग (Square) क्या है?", a: ["25"], e: "5 x 5 = 25" },
+            { q: "0.5 + 0.5 = ?", a: ["1"], e: "आधा और आधा एक होता है।" },
+            { q: "एक दर्जन में कितने केले होते हैं?", a: ["12"], e: "1 Dozen = 12 items." },
+            { q: "20 को 1/2 से भाग (Divide) देने पर क्या आएगा?", a: ["40"], e: "20 / (1/2) = 20 * 2 = 40" },
+            { q: "सबसे छोटी अभाज्य संख्या (Prime Number) कौन सी है?", a: ["2"], e: "2 सबसे छोटी Prime Number है।" },
+            { q: "1 घंटे में कितने सेकंड होते हैं?", a: ["3600"], e: "60 मिनट x 60 सेकंड = 3600" },
+            { q: "9 x 8 = ?", a: ["72"], e: "9 अठ्ठे 72।" },
+            { q: "15 + 15 + 15 = 45. तो 15 x 3 = ?", a: ["45"], e: "जोड़ और गुणा का संबंध।" },
+            { q: "वृत्त (Circle) में कितनी भुजाएं (Sides) होती हैं?", a: ["0", "zero"], e: "सर्कल की कोई साइड नहीं होती।" },
+            { q: "1000 का 10% कितना है?", a: ["100"], e: "1000 x 10/100 = 100" },
+            { q: "Roman Numeral 'X' का मान क्या है?", a: ["10"], e: "X का मतलब 10 होता है।" },
+            { q: "2 + 2 x 2 = ?", a: ["6"], e: "BODMAS: 2 x 2 = 4, फिर 2 + 4 = 6" }
+        ];
+
+        // --- 3. QUIZ ENGINE ---
+        let quizState = {
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            isFinished: false
+        };
+
+        const dom = {
+            qText: document.getElementById('questionText'),
+            input: document.getElementById('userAnswer'),
+            result: document.getElementById('resultArea'),
+            explain: document.getElementById('explanation'),
+            nextBtn: document.getElementById('nextBtn'),
+            lockBtn: document.getElementById('lockBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            level: document.getElementById('levelCounter'),
+            score: document.getElementById('scoreCounter'),
+            rank: document.getElementById('rankDisplay'),
+            quizBox: document.getElementById('quizContainer')
+        };
+
+        function getRank(score) {
+            if (score >= 800) return { title: "Mastermind 👑", color: "#FFD700" };
+            if (score >= 500) return { title: "Strategist ⚡", color: "#00BFFF" };
+            if (score >= 200) return { title: "Thinker 🧠", color: "#FF69B4" };
+            return { title: "Beginner 🟢", color: "#00ff41" };
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQuiz() {
+            let savedScore = localStorage.getItem('rebootQuizScore');
+            quizState.score = savedScore ? parseInt(savedScore) : 0;
+            quizState.questions = shuffle([...fullQuestionBank]);
+            quizState.currentIndex = 0;
+            quizState.isFinished = false;
+
+            updateUI();
+            loadQuestion();
+        }
+
+        function updateUI() {
+            dom.score.innerText = quizState.score;
+            dom.level.innerText = quizState.currentIndex + 1;
+            const rankData = getRank(quizState.score);
+            dom.rank.innerText = rankData.title;
+            dom.rank.style.color = rankData.color;
+        }
+
+        function loadQuestion() {
+            if (quizState.currentIndex >= quizState.questions.length) {
+                endGame();
+                return;
+            }
+
+            const q = quizState.questions[quizState.currentIndex];
+            dom.qText.innerText = `Q${quizState.currentIndex + 1}: ${q.q}`;
+            dom.input.value = "";
+            dom.input.style.display = "block";
+            dom.input.disabled = false;
+            dom.input.focus();
+            
+            dom.result.innerHTML = "";
+            dom.explain.style.display = "none";
+            
+            dom.lockBtn.style.display = "inline-block";
+            dom.nextBtn.style.display = "none";
+            dom.restartBtn.style.display = "none";
+        }
+
+        function checkAnswer() {
+            const userVal = dom.input.value.toLowerCase().trim();
+            if (!userVal) return;
+
+            const currentQ = quizState.questions[quizState.currentIndex];
+            const isCorrect = currentQ.a.some(ans => userVal.includes(ans.toLowerCase()));
+
+            dom.input.disabled = true;
+            dom.lockBtn.style.display = "none";
+
+            if (isCorrect) {
+                quizState.score += 10;
+                localStorage.setItem('rebootQuizScore', quizState.score);
+                dom.result.innerHTML = "<span style='color:#00ff41'>✅ सही जवाब! (+10 XP)</span>";
+                updateUI();
+            } else {
+                const roasts = ["गलत! Reels ने दिमाग खा लिया? 🤡", "IQ Drop Detected! 📉", "बेटा तुमसे न हो पाएगा!", "Focus ब्रो, Focus!"];
+                let randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
+                dom.result.innerHTML = `<span style='color:#ff3333'>❌ ${randomRoast}</span>`;
+            }
+
+            dom.explain.innerHTML = currentQ.e;
+            dom.explain.style.display = "block";
+            dom.nextBtn.style.display = "inline-block";
+        }
+
+        function nextQuestion() {
+            quizState.currentIndex++;
+            if (quizState.currentIndex < quizState.questions.length) {
+                loadQuestion();
+                updateUI();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            quizState.isFinished = true;
+            dom.qText.innerText = "🎉 Challenge Completed! 🎉";
+            dom.input.style.display = "none";
+            dom.lockBtn.style.display = "none";
+            dom.nextBtn.style.display = "none";
+            dom.explain.style.display = "none";
+            
+            const rankData = getRank(quizState.score);
+            dom.result.innerHTML = `
+                <div style="padding: 20px; border: 1px solid var(--primary); border-radius: 10px; margin-top: 20px;">
+                    <p style="font-size: 1.5rem; color: #fff;">Final Score: <span style="color:var(--primary)">${quizState.score}</span></p>
+                    <p style="font-size: 1.5rem; color: #fff;">Rank: <span style="color:${rankData.color}">${rankData.title}</span></p>
+                    <p style="margin-top:10px; font-size:1rem;">"सफलता एक दिन में नहीं मिलती, लेकिन एक दिन जरूर मिलती है।"</p>
+                </div>
+            `;
+            dom.restartBtn.style.display = "inline-block";
+        }
+
+        function restartQuiz() {
+            if(confirm("Start fresh? Your score will reset to 0.")) {
+                localStorage.setItem('rebootQuizScore', 0);
+                initQuiz();
+            }
+        }
+
+        dom.input.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        // Initialize Game
+        initQuiz();
+
+        /* --- YAMA AI LOGIC (SECURE NETLIFY VERSION) --- */
+
+        // 1. CHAT TOGGLE
+        function toggleChat() {
+            const box = document.getElementById('yamaChatBox');
+            box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'flex' : 'none';
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        // 2. ASK PROFESSOR (Center Section)
+        async function askProf() {
+            const inputField = document.getElementById('user-ques'); 
+            const replyBox = document.getElementById('prof-reply');
+            const userText = inputField.value.trim();
+
+            if (!userText) return;
+
+            replyBox.style.display = "block";
+            replyBox.className = "explain-box"; 
+            replyBox.innerHTML = "<b>प्रोफेसर यम सोच रहे हैं... 🤔</b>";
+
+            try {
+                const response = await fetch("/.netlify/functions/yama-ai", {
+                    method: "POST",
+                    body: JSON.stringify({ prompt: userText })
+                });
+                const data = await response.json();
+                const botReply = data.text || "जवाब नहीं मिल पाया।";
+                
+                replyBox.innerHTML = `<b>प्रोफेसर:</b> ${botReply.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')}`;
+            } catch (error) {
+                replyBox.innerHTML = "संपर्क विफल! कृपया Netlify पर Deploy करने के बाद चेक करें।";
+            }
+            inputField.value = "";
+        }
+
+        // 3. SEND MESSAGE (Floating Widget)
+        async function sendMessage() {
+            const inputField = document.getElementById('aiInput');
+            const chatHistory = document.getElementById('chatHistory');
+            const userText = inputField.value.trim();
+
+            if (!userText) return;
+
+            chatHistory.innerHTML += `<div class="msg msg-user">${userText}</div>`;
+            inputField.value = "";
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            const loadingId = "loading-" + Date.now();
+            chatHistory.innerHTML += `<div class="msg msg-yama" id="${loadingId}">प्रोफेसर लिख रहे हैं... ✍️</div>`;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            try {
+                const response = await fetch("/.netlify/functions/yama-ai", {
+                    method: "POST",
+                    body: JSON.stringify({ prompt: userText })
+                });
+                const data = await response.json();
+                const botReply = data.text || "माफ करना, मैं समझ नहीं पाया।";
+
+                document.getElementById(loadingId).innerHTML = botReply.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "त्रुटि: सर्वर से जुड़ नहीं पा रहा हूँ।";
+            }
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+    </script>
+</body>
+</html>
